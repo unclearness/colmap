@@ -45,7 +45,13 @@ endif()
 
 find_package(Git)
 
-find_package(CHOLMOD REQUIRED)
+if(CHOLMOD_ENABLED)
+    find_package(CHOLMOD REQUIRED)
+    list(APPEND COLMAP_COMPILE_DEFINITIONS COLMAP_CHOLMOD_ENABLED)
+    message(STATUS "Enabling CHOLMOD support")
+else()
+    message(STATUS "Disabling CHOLMOD support")
+endif()
 
 # Ceres is found before Glog on purpose. Some distributions (e.g. Fedora) ship a
 # Ceres whose bundled FindGlog.cmake unconditionally calls add_library(glog::glog)

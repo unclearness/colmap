@@ -35,13 +35,18 @@ namespace colmap {
 
 void SparseCholeskyWithFallbackSolver::AnalyzePattern(
     const Eigen::SparseMatrix<double>& A) {
+#ifdef COLMAP_CHOLMOD_ENABLED
   supernodal_.analyzePattern(A);
   // LDLT pattern is analyzed lazily on first fallback, since the common case
   // never needs it.
+#else
+  ldlt_.analyzePattern(A);
+#endif
 }
 
 bool SparseCholeskyWithFallbackSolver::Factorize(
     const Eigen::SparseMatrix<double>& A) {
+#ifdef COLMAP_CHOLMOD_ENABLED
   if (!use_ldlt_) {
     supernodal_.factorize(A);
     if (supernodal_.info() == Eigen::Success) {
@@ -52,6 +57,7 @@ bool SparseCholeskyWithFallbackSolver::Factorize(
     ldlt_.analyzePattern(A);
     use_ldlt_ = true;
   }
+#endif
   ldlt_.factorize(A);
   return ldlt_.info() == Eigen::Success;
 }
@@ -69,8 +75,12 @@ bool SparseCholeskyWithFallbackSolver::Solve(const Eigen::VectorXd& b,
     x->noalias() = ldlt_.solve(b);
     return ldlt_.info() == Eigen::Success;
   }
+#ifdef COLMAP_CHOLMOD_ENABLED
   x->noalias() = supernodal_.solve(b);
   return supernodal_.info() == Eigen::Success;
+#else
+  return false;  // Unreachable: use_ldlt_ is always true without CHOLMOD.
+#endif
 }
 
 }  // namespace colmap

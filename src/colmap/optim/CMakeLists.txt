@@ -44,8 +44,10 @@ COLMAP_ADD_LIBRARY(
         colmap_math
         colmap_util
         Eigen3::Eigen
-        CHOLMOD::CHOLMOD
 )
+if(CHOLMOD_ENABLED)
+    target_link_libraries(colmap_optim PUBLIC CHOLMOD::CHOLMOD)
+endif()
 if(OPENMP_FOUND)
     target_link_libraries(colmap_optim PUBLIC OpenMP::OpenMP_CXX)
 endif()

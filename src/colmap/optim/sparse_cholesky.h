@@ -29,7 +29,9 @@
 
 #pragma once
 
+#ifdef COLMAP_CHOLMOD_ENABLED
 #include <Eigen/CholmodSupport>
+#endif
 #include <Eigen/SparseCholesky>
 #include <Eigen/SparseCore>
 
@@ -53,9 +55,14 @@ class SparseCholeskyWithFallbackSolver {
   bool Solve(const Eigen::VectorXd& b, Eigen::VectorXd* x) const;
 
  private:
+#ifdef COLMAP_CHOLMOD_ENABLED
   Eigen::CholmodSupernodalLLT<Eigen::SparseMatrix<double>> supernodal_;
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_;
   bool use_ldlt_ = false;
+#else
+  // Without CHOLMOD, the simplicial LDLT solver is used directly.
+  bool use_ldlt_ = true;
+#endif
+  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_;
 };
 
 }  // namespace colmap
