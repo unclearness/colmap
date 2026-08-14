@@ -73,8 +73,10 @@ if(CASPAR_ENABLED)
     endif()
 endif()
 
-# Disables default features, as we specify each required feature manually below.
-list(APPEND VCPKG_MANIFEST_FEATURES "core")
+# Disables default features, as we specify each required feature manually
+# below. Newer vcpkg rejects the reserved feature name "core" when passed as
+# --x-feature, so use the dedicated variable instead.
+set(VCPKG_MANIFEST_NO_DEFAULT_FEATURES ON)
 
 # Propagate options to vcpkg manifest.
 if(TESTS_ENABLED)
