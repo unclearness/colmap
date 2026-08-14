@@ -34,6 +34,11 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
 endif()
 
 # Determine project operating system.
+# Note: CMAKE_SYSTEM_NAME is "Android" (not "Linux") when using the NDK
+# toolchain, so IS_LINUX and IS_ANDROID are mutually exclusive.
+if(ANDROID OR CMAKE_SYSTEM_NAME STREQUAL "Android")
+    set(IS_ANDROID TRUE)
+endif()
 string(REGEX MATCH "Linux" IS_LINUX ${CMAKE_SYSTEM_NAME})
 string(REGEX MATCH "DragonFly|BSD" IS_BSD ${CMAKE_SYSTEM_NAME})
 string(REGEX MATCH "SunOS" IS_SOLARIS ${CMAKE_SYSTEM_NAME})
