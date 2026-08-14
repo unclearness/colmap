@@ -33,10 +33,15 @@ if(NOT TARGET SQLite3::SQLite3 AND TARGET SQLite::SQLite3)
     add_library(SQLite3::SQLite3 ALIAS SQLite::SQLite3)
 endif()
 
-set(OpenGL_GL_PREFERENCE GLVND)
-find_package(OpenGL ${COLMAP_FIND_TYPE})
+# OpenGL/Glew are only linked when the GUI or GPU-based features are enabled
+# (see src/colmap/util/CMakeLists.txt and src/colmap/feature/CMakeLists.txt),
+# so skip searching for them in headless CPU-only builds (e.g. Android).
+if(GUI_ENABLED OR OPENGL_ENABLED OR CUDA_ENABLED)
+    set(OpenGL_GL_PREFERENCE GLVND)
+    find_package(OpenGL ${COLMAP_FIND_TYPE})
 
-find_package(Glew ${COLMAP_FIND_TYPE})
+    find_package(Glew ${COLMAP_FIND_TYPE})
+endif()
 
 find_package(Git)
 
