@@ -114,7 +114,9 @@ set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_NO_CYCLES ON)
 # Include CMake dependencies
 ################################################################################
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+# Prepend rather than overwrite, so user-provided module paths (e.g. a
+# FindLAPACK for bundled faiss) remain visible to subprojects.
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
